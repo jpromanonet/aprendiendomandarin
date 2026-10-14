@@ -10,12 +10,11 @@ function login_session(int $userId): void
 
 function create_user(string $email, ?string $password, string $name, ?string $avatar = null): int
 {
-    $count = (int) db()->query('SELECT COUNT(*) FROM users')->fetchColumn();
     $hash = $password !== null && $password !== '' ? password_hash($password, PASSWORD_DEFAULT) : null;
     $stmt = db()->prepare(
-        'INSERT INTO users (email, password_hash, display_name, avatar_url, is_admin) VALUES (?, ?, ?, ?, ?)'
+        'INSERT INTO users (email, password_hash, display_name, avatar_url, is_admin) VALUES (?, ?, ?, ?, 0)'
     );
-    $stmt->execute([$email, $hash, $name, $avatar, $count === 0 ? 1 : 0]);
+    $stmt->execute([$email, $hash, $name, $avatar]);
     return (int) db()->lastInsertId();
 }
 

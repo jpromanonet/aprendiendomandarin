@@ -323,7 +323,7 @@ function install_run(): string
     }
 
     $db->exec('SET FOREIGN_KEY_CHECKS=0');
-    foreach (['self_assessments', 'lesson_progress', 'certificates', 'quizzes', 'lessons', 'dictionary_entries', 'levels'] as $table) {
+    foreach (['self_assessments', 'lesson_progress', 'course_certificates', 'certificates', 'quizzes', 'lessons', 'dictionary_entries', 'levels'] as $table) {
         $db->exec('TRUNCATE TABLE ' . $table);
     }
     $db->exec('SET FOREIGN_KEY_CHECKS=1');

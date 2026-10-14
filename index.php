@@ -50,14 +50,14 @@ if ($path === 'diccionario' && $method === 'GET') {
 if ($path === 'libros' && $method === 'GET') {
     page_books();
 }
-if ($path === 'libros' && $method === 'POST') {
-    post_book();
-}
 if (preg_match('#^libros/(\d+)/descargar$#', $path, $m) && $method === 'GET') {
     download_book((int) $m[1]);
 }
 if ($path === 'cuenta' && $method === 'GET') {
     page_account();
+}
+if ($path === 'certificados' && $method === 'GET') {
+    page_certificates();
 }
 if ($path === 'cuenta' && $method === 'POST') {
     post_account();

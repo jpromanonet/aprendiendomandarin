@@ -18,6 +18,11 @@ document.querySelectorAll('.site-nav a').forEach((link) => {
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') setMenu(false);
 });
+document.querySelectorAll('[data-avatar-form] input[type="file"]').forEach((input) => {
+  input.addEventListener('change', () => {
+    if (input.files && input.files.length) input.form?.requestSubmit();
+  });
+});
 
 function fold(value) {
   return value

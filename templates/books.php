@@ -2,7 +2,7 @@
   <div class="page-hero-inner">
     <p class="eyebrow light">Lecturas</p>
     <h1>Libros</h1>
-    <p class="lede">Acá van a estar los libros que sumemos. Por ahora la estantería está vacía.</p>
+    <p class="lede"><?= $books ? 'Textos para acompañar las clases. Se descargan desde acá.' : 'Acá van a estar los libros que sumemos. Por ahora la estantería está vacía.' ?></p>
     <a class="text-link on-dark" href="<?= e(url()) ?>">← Volver al inicio</a>
   </div>
 </section>
@@ -19,13 +19,3 @@
     </article>
   <?php endforeach; ?>
 </div>
-<?php if ($user && (int) $user['is_admin'] === 1): ?>
-  <form class="book-form" method="post" enctype="multipart/form-data" action="<?= e(url('libros')) ?>">
-    <?= csrf_field() ?>
-    <h2>Subir un libro</h2>
-    <label>Título <input name="title" required></label>
-    <label>Descripción <textarea name="description" rows="3"></textarea></label>
-    <label>PDF <input type="file" name="pdf" accept="application/pdf" required></label>
-    <button class="primary-btn" type="submit">Publicar</button>
-  </form>
-<?php endif; ?>

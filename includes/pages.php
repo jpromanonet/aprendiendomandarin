@@ -216,6 +216,24 @@ function maybe_certificate(int $userId, int $levelId): void
     $code = 'HSK' . $levelId . '-' . strtoupper(bin2hex(random_bytes(4)));
     $insert = db()->prepare('INSERT INTO certificates (user_id, level_id, code) VALUES (?, ?, ?)');
     $insert->execute([$userId, $levelId, $code]);
+    maybe_final_certificate($userId);
+}
+
+function maybe_final_certificate(int $userId): void
+{
+    $count = db()->prepare('SELECT COUNT(*) FROM certificates WHERE user_id = ?');
+    $count->execute([$userId]);
+    if ((int) $count->fetchColumn() < 9) {
+        return;
+    }
+    $exists = db()->prepare('SELECT id FROM course_certificates WHERE user_id = ?');
+    $exists->execute([$userId]);
+    if ($exists->fetchColumn()) {
+        return;
+    }
+    $code = 'FINAL-' . strtoupper(bin2hex(random_bytes(4)));
+    $insert = db()->prepare('INSERT INTO course_certificates (user_id, code) VALUES (?, ?)');
+    $insert->execute([$userId, $code]);
 }
 
 function page_dictionary(): void
@@ -302,42 +320,6 @@ function page_books(): void
     ]);
 }
 
-function post_book(): void
-{
-    csrf_check();
-    $user = current_user();
-    if (!$user || (int) $user['is_admin'] !== 1) {
-        http_response_code(403);
-        exit('No tenés permiso para subir libros.');
-    }
-    $title = trim((string) ($_POST['title'] ?? ''));
-    $description = trim((string) ($_POST['description'] ?? ''));
-    $file = $_FILES['pdf'] ?? null;
-    if ($title === '' || !$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-        flash('Hace falta un título y un PDF.');
-        redirect('libros');
-    }
-    $tmp = (string) $file['tmp_name'];
-    $head = (string) file_get_contents($tmp, false, null, 0, 5);
-    if ($head !== '%PDF-' || (int) $file['size'] > 32 * 1024 * 1024) {
-        flash('El archivo tiene que ser un PDF de hasta 32 MB.');
-        redirect('libros');
-    }
-    $name = bin2hex(random_bytes(8)) . '.pdf';
-    $dir = app_root() . '/storage/libros';
-    if (!is_dir($dir)) {
-        mkdir($dir, 0775, true);
-    }
-    if (!move_uploaded_file($tmp, $dir . '/' . $name)) {
-        flash('No se pudo guardar el PDF.');
-        redirect('libros');
-    }
-    $stmt = db()->prepare('INSERT INTO books (title, description, file_name, size_label) VALUES (?, ?, ?, ?)');
-    $stmt->execute([$title, $description, $name, format_bytes((int) $file['size'])]);
-    flash('Libro publicado.');
-    redirect('libros');
-}
-
 function download_book(int $id): void
 {
     $stmt = db()->prepare('SELECT * FROM books WHERE id = ?');
@@ -355,6 +337,46 @@ function download_book(int $id): void
     header('Content-Disposition: attachment; filename="' . rawurlencode((string) $book['title']) . '.pdf"');
     readfile($path);
     exit;
+}
+
+function page_certificates(): void
+{
+    $user = current_user();
+    $levels = db()->query('SELECT * FROM levels ORDER BY sort_order, id')->fetchAll();
+    $certs = [];
+    $finalCert = null;
+    $stats = [];
+    if ($user) {
+        foreach ($levels as $level) {
+            maybe_certificate((int) $user['id'], (int) $level['id']);
+        }
+        maybe_final_certificate((int) $user['id']);
+        $certStmt = db()->prepare('SELECT * FROM certificates WHERE user_id = ?');
+        $certStmt->execute([(int) $user['id']]);
+        foreach ($certStmt as $row) {
+            $certs[(int) $row['level_id']] = $row;
+        }
+        $finalStmt = db()->prepare('SELECT * FROM course_certificates WHERE user_id = ?');
+        $finalStmt->execute([(int) $user['id']]);
+        $finalCert = $finalStmt->fetch() ?: null;
+        $countStmt = db()->prepare(
+            'SELECT l.level_id, COUNT(*) AS total, SUM(CASE WHEN p.completed = 1 THEN 1 ELSE 0 END) AS done
+             FROM lessons l
+             LEFT JOIN lesson_progress p ON p.lesson_id = l.id AND p.user_id = ?
+             GROUP BY l.level_id'
+        );
+        $countStmt->execute([(int) $user['id']]);
+        foreach ($countStmt as $row) {
+            $stats[(int) $row['level_id']] = ['done' => (int) $row['done'], 'total' => (int) $row['total']];
+        }
+    }
+    render('certificates', [
+        'title' => 'Certificados',
+        'navLevels' => $levels,
+        'certs' => $certs,
+        'finalCert' => $finalCert,
+        'levelStats' => $stats,
+    ]);
 }
 
 function page_account(): void
@@ -384,6 +406,36 @@ function page_account(): void
             $certs[(int) $row['level_id']] = $row;
         }
     }
+    $learnedWords = 0;
+    $wordsByLesson = [];
+    $learnedIds = [];
+    foreach ($progress as $lessonId => $row) {
+        if (!empty($row['completed'])) {
+            $learnedIds[(int) $lessonId] = (int) $lessonId;
+        }
+    }
+    foreach ($assess as $lessonId => $row) {
+        if (!empty($row['passed'])) {
+            $learnedIds[(int) $lessonId] = (int) $lessonId;
+        }
+    }
+    if ($learnedIds) {
+        $ids = array_values($learnedIds);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $wordStmt = db()->prepare("SELECT id, content_json FROM lessons WHERE id IN ($placeholders)");
+        $wordStmt->execute($ids);
+        foreach ($wordStmt as $row) {
+            $content = json_decode((string) $row['content_json'], true);
+            $count = 0;
+            foreach (($content['sections'] ?? []) as $section) {
+                if (($section['type'] ?? '') === 'vocab') {
+                    $count += count($section['items'] ?? []);
+                }
+            }
+            $wordsByLesson[(int) $row['id']] = $count;
+            $learnedWords += $count;
+        }
+    }
     render('account', [
         'title' => 'Cuenta',
         'navLevels' => $levels,
@@ -391,6 +443,8 @@ function page_account(): void
         'progressMap' => $progress,
         'assessMap' => $assess,
         'certs' => $certs,
+        'learnedWords' => $learnedWords,
+        'wordsByLesson' => $wordsByLesson,
     ]);
 }
 

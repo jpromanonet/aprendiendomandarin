@@ -35,7 +35,7 @@
     <p class="eyebrow">El sistema</p>
     <h2>Nueve niveles, tres etapas</h2>
     <p class="lede">HSK quiere decir Hànyǔ Shuǐpíng Kǎoshì: el examen de nivel de chino. Ordena el idioma en nueve niveles y tres etapas. Los anteriores eran seis. Del 1 al 6 cada nivel tiene examen propio. El 7, el 8 y el 9 comparten un solo examen y una sola lista: en el examen oficial, la nota decide el certificado. En este sitio esa lista está partida en tres bloques de estudio, de tamaño parecido, para cursarlos en orden.</p>
-    <p class="cert-note">Al completar todas las clases de un nivel, la cuenta muestra un certificado. No tiene validez oficial: solo deja constancia de que terminaste ese nivel acá.</p>
+    <p class="cert-note">Al completar todas las clases de un nivel, el certificado queda en Certificados. No tiene validez oficial: solo deja constancia de que terminaste ese nivel acá.</p>
     <div class="stage-grid">
       <article>
         <p class="stage-kicker">01</p>

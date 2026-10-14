@@ -174,6 +174,16 @@ function http_request(string $method, string $url, ?array $form = null, ?string 
     return is_array($json) ? $json : [];
 }
 
+function fecha_es(string $datetime): string
+{
+    $months = [1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril', 5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto', 9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'];
+    $ts = strtotime($datetime);
+    if (!$ts) {
+        return '';
+    }
+    return (int) date('j', $ts) . ' de ' . $months[(int) date('n', $ts)] . ' de ' . date('Y', $ts);
+}
+
 function render(string $template, array $data = [], int $status = 200): void
 {
     http_response_code($status);

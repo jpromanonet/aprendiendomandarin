@@ -64,8 +64,14 @@ $here = request_path();
             </a>
           </div>
           <div class="nav-account-slot">
-            <a class="nav-pill nav-pill-account<?= str_starts_with($here, 'cuenta') ? ' is-on' : '' ?>" href="<?= e(url('cuenta')) ?>">
-              <span class="nav-pill-label"><strong><?= $user ? e($user['display_name']) : 'Cuenta' ?></strong><em><?= $user ? 'Tu progreso' : 'Entrar' ?></em></span>
+            <?php $navPhoto = $user ? avatar_src($user) : ''; ?>
+            <a class="nav-pill nav-pill-account<?= $user ? ' has-avatar' : '' ?><?= str_starts_with($here, 'cuenta') || $here === 'certificados' ? ' is-on' : '' ?>" href="<?= e(url('cuenta')) ?>">
+              <?php if ($navPhoto !== ''): ?>
+                <img class="nav-avatar" src="<?= e($navPhoto) ?>" alt="">
+              <?php elseif ($user): ?>
+                <span class="nav-avatar nav-avatar-fallback" aria-hidden="true"><?= e(mb_substr($user['display_name'], 0, 1)) ?></span>
+              <?php endif; ?>
+              <span class="nav-pill-label"><strong><?= $user ? 'Perfil' : 'Cuenta' ?></strong><em><?= $user ? 'Tu cuenta' : 'Entrar' ?></em></span>
             </a>
           </div>
         </div>

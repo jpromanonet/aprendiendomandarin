@@ -1,0 +1,5 @@
+Léxico HSK (hanzi, pinyin, sentidos en inglés y ejemplos) armado por Gushi a partir del programa de noviembre de 2025.
+Sentidos en inglés: CC-CEDICT, CC BY-SA 4.0.
+Ejemplos: en gran parte Tatoeba, CC BY 2.0 FR.
+El archivo de palabras y esta derivación en español se comparten bajo CC BY-SA 4.0.
+Atribución: HSK syllabus data by Gushi, https://gushichinese.com/hsk-3.0/downloads

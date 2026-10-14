@@ -1,0 +1,10 @@
+config.php
+storage/installed.lock
+storage/libros/*
+storage/avatars/*
+!storage/libros/.gitkeep
+!storage/avatars/.gitkeep
+data/es-cache.json
+assets/audio/*.mp3
+assets/audio/*.part
+scripts/_tts_test/

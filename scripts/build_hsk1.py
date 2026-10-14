@@ -1,0 +1,258 @@
+# -*- coding: utf-8 -*-
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+src = json.loads((ROOT / "data" / "hsk-3.0-words-all.json").read_text(encoding="utf-8"))
+official = [r["hanzi"] for r in src["data"] if r["level"] == 1]
+
+groups = {
+    1: "吧 吗 呢 的 了 一 不 个 们 第 些 只 和 也 都 给 还 口 对 再".split(),
+    2: "你好 你们 您 你 我 我们 再见 谢谢 不客气 对不起 没关系 请 请问 喂 早 早上 晚上 好 没事 不要".split(),
+    3: "是 叫 名字 什么 人 中国 汉语 中文 学生 老师 朋友 谁 哪 哪个 认识 先生 女士 国 那 这 那个 这个 这些 那些 哪些 这边 大家 大学生 同学 事 怎么 怎么样".split(),
+    4: "八 百 二 九 六 零 七 千 三 十 四 五 岁 多少 几 多 少 大 小 号 两 半 块 元 一半 一点儿".split(),
+    5: "爸爸 妈妈 弟弟 儿子 哥哥 姐姐 妹妹 女儿 家 家人 有 没有 孩子 男 女 男朋友 女朋友 他 她 它 他们 她们 它们 小朋友".split(),
+    6: "今天 明天 昨天 现在 年 月 日 星期 星期日 星期天 今年 明年 去年 分 分钟 小时 上午 中午 下午 点 时间 时候 天 白天 晚".split(),
+    7: "吃 喝 茶 水 米饭 菜 饭 饭店 包子 饺子 鸡蛋 面包 面条儿 苹果 水果 牛奶 早饭 午饭 晚饭 好吃 杯子 做饭".split(),
+    8: "喜欢 爱 想 要 很 太 高兴 好听 好玩儿 忙 冷 热 觉得 真 非常 正在 一下 一些 有的 有点儿 有些".split(),
+    9: "在 哪儿 那里 哪里 那边 这儿 那儿 这里 学校 医院 商店 前 后 里 外 上 下 边 外边 超市 公司 书店 电影院 大学 中学 小学 小学生 中学生".split(),
+    10: "钱 买 卖 东西 店 手机 电脑 电视 电影 书 汉字 字 本 电话".split(),
+    11: "能 会 可以 说 听 看 读 写 开 做 学 学习 说话 看见 听见 读书 问 问题 知道 唱 歌 见".split(),
+    12: "去 来 回 工作 睡觉 睡 起床 上班 下班 上课 下课 上学 休息 玩 坐 开车 出租车 火车 飞机 车 到 住 找 课 打电话".split(),
+    13: "房间 椅子 桌子 狗 猫 雨 下雨 雪 天气 病 生病 看病 医生".split(),
+    14: "衣服 穿 漂亮 好看 新 贵 便宜 件".split(),
+}
+
+assigned = [w for words in groups.values() for w in words]
+missing = [w for w in official if w not in assigned]
+extra = [w for w in assigned if w not in official]
+dups = [w for w in assigned if assigned.count(w) > 1]
+print("classes", {k: len(v) for k, v in groups.items()})
+print("assigned", len(assigned), "unique", len(set(assigned)))
+print("missing", missing)
+print("extra", extra)
+print("dups", sorted(set(dups)))
+if missing or extra or dups:
+    raise SystemExit(1)
+
+classes = [
+    {
+        "number": 1,
+        "title": "Sonidos y tonos",
+        "summary": "Los cuatro tonos, el tono neutro y cómo cambia el tono de 一, 不 y dos terceros seguidos.",
+        "body": [
+            "El mandarín tiene cuatro tonos y un tono neutro. El mismo sonido con otro tono es otra palabra: mā, má, mǎ, mà.",
+            "妈 mā es un primer tono, alto y plano. 麻 má sube. 马 mǎ baja y vuelve a subir. 骂 mà cae. 吗 ma es neutro, corto, y convierte la frase en pregunta.",
+            "Cuando se juntan dos terceros tonos, el primero se pronuncia como segundo: nǐ hǎo se oye ní hǎo. 不 es cuarto tono, pero pasa a segundo delante de otro cuarto: bù + qù se oye bú qù. 一 es primer tono solo; delante de un cuarto tono baja a segundo, y delante de otro tono cae a cuarto.",
+        ],
+        "pins": groups[1],
+        "extras": [
+            {"hanzi": "妈", "pinyin": "mā", "es": "mamá"},
+            {"hanzi": "麻", "pinyin": "má", "es": "cáñamo; adormecido"},
+            {"hanzi": "马", "pinyin": "mǎ", "es": "caballo"},
+            {"hanzi": "骂", "pinyin": "mà", "es": "retar, insultar"},
+        ],
+    },
+    {
+        "number": 2,
+        "title": "Saludos",
+        "summary": "Hola, gracias, perdón y las formas de vos y usted.",
+        "body": [
+            "你好 sirve casi siempre. 您好 es la forma de respeto, con 您. 你们 es «ustedes» o «vosotros».",
+            "谢谢 se responde con 不客气 o 没事. 对不起 se responde con 没关系. 请 va delante de un pedido: 请坐, 请问.",
+            "早上好 y 晚上好 se arman con 早上 y 晚上 más 好.",
+        ],
+        "pins": groups[2],
+        "extras": [{"hanzi": "您好", "pinyin": "nín hǎo", "es": "hola (de respeto)"}],
+    },
+    {
+        "number": 3,
+        "title": "Presentarse",
+        "summary": "Decir cómo te llamás, de dónde sos y qué hacés.",
+        "body": [
+            "我叫… es «me llamo». 我是… es «soy». 吗 cierra una pregunta de sí o no: 你是学生吗？",
+            "什么 pregunta «qué». 谁 pregunta «quién». 哪 y 哪个 preguntan «cuál».",
+            "中国 es China, 汉语 y 中文 son el idioma chino. Para decir tu país podés usar el nombre propio, por ejemplo 阿根廷.",
+        ],
+        "pins": groups[3],
+        "extras": [
+            {"hanzi": "阿根廷", "pinyin": "Āgēntíng", "es": "Argentina"},
+            {"hanzi": "西班牙语", "pinyin": "Xībānyá yǔ", "es": "idioma español"},
+        ],
+    },
+    {
+        "number": 4,
+        "title": "Números y edad",
+        "summary": "Contar, preguntar cuánto y decir la edad.",
+        "body": [
+            "Del 1 al 10: 一 二 三 四 五 六 七 八 九 十. 两 también es «dos» y se usa con un clasificador: 两个人.",
+            "你几岁？ se usa con chicos. 你多大？ se usa con adultos. La edad lleva 岁.",
+            "多少 pregunta cantidad. 块 y 元 son la unidad de dinero.",
+        ],
+        "pins": groups[4],
+        "extras": [],
+    },
+    {
+        "number": 5,
+        "title": "La familia",
+        "summary": "Presentar a la familia con 有 y 没有.",
+        "body": [
+            "家 es la casa y también la familia. 家人 es un miembro de la familia.",
+            "有 dice que algo existe o que lo tenés. 没有 es la negación. 我家有三个人.",
+            "哥哥 y 姐姐 son los mayores. 弟弟 y 妹妹 son los menores. El chino marca esa diferencia.",
+        ],
+        "pins": groups[5],
+        "extras": [],
+    },
+    {
+        "number": 6,
+        "title": "Fecha y hora",
+        "summary": "Hoy, mañana, los días de la semana y la hora.",
+        "body": [
+            "El orden de la fecha es de mayor a menor: año, mes, día. 2026年10月13号.",
+            "现在几点？ pregunta la hora. 点 es la hora y 分 el minuto. 半 es «y media».",
+            "上午 es la mañana, 中午 el mediodía, 下午 la tarde y 晚上 la noche.",
+        ],
+        "pins": groups[6],
+        "extras": [],
+    },
+    {
+        "number": 7,
+        "title": "Comer",
+        "summary": "Comida, bebida y el restaurante.",
+        "body": [
+            "吃 es comer y 喝 es beber. 不 los niega: 我不喝茶.",
+            "米饭 es arroz cocido, 菜 el plato o la verdura, 饭店 el restaurante.",
+            "早饭, 午饭 y 晚饭 son el desayuno, el almuerzo y la cena.",
+        ],
+        "pins": groups[7],
+        "extras": [],
+    },
+    {
+        "number": 8,
+        "title": "Gustos",
+        "summary": "Gustar, querer y decir que algo es mucho o demasiado.",
+        "body": [
+            "喜欢 es gustar. 爱 es querer o amar. 想 y 要 expresan ganas o intención: 我想喝茶.",
+            "很 refuerza: 很好. 太…了 dice que algo se pasa: 太贵了.",
+            "觉得 es «me parece». 正在 marca que algo está pasando ahora.",
+        ],
+        "pins": groups[8],
+        "extras": [],
+    },
+    {
+        "number": 9,
+        "title": "Dónde está",
+        "summary": "Decir dónde estás y ubicar un lugar.",
+        "body": [
+            "在 indica el lugar: 我在学校. 哪儿, 哪里 y 那儿 preguntan o señalan dónde.",
+            "这儿 y 这里 son «acá». 那儿 y 那里 son «allá».",
+            "前, 后, 里, 外, 上 y 下 ubican respecto de algo: 学校前边.",
+        ],
+        "pins": groups[9],
+        "extras": [
+            {"hanzi": "前面", "pinyin": "qiánmiàn", "es": "delante"},
+            {"hanzi": "后面", "pinyin": "hòumiàn", "es": "detrás"},
+        ],
+    },
+    {
+        "number": 10,
+        "title": "Comprar",
+        "summary": "Precios, cosas y preguntar cuánto sale.",
+        "body": [
+            "多少钱 pregunta el precio. 块 es la palabra cotidiana para el yuan.",
+            "买 es comprar y 卖 es vender. 东西 es «cosa».",
+            "这个多少钱？ se entiende con 这个, que ya viste al presentarte.",
+        ],
+        "pins": groups[10],
+        "extras": [{"hanzi": "本子", "pinyin": "běnzi", "es": "cuaderno"}],
+    },
+    {
+        "number": 11,
+        "title": "Poder y habilidades",
+        "summary": "Decir lo que sabés hacer: 会, 能 y 可以.",
+        "body": [
+            "会 es una habilidad aprendida: 我会说汉语. 能 es poder en esta situación: 我今天不能去. 可以 es «se puede» o permiso.",
+            "说, 听, 看, 读 y 写 son hablar, oír, mirar, leer y escribir. 字 y 汉字 son el carácter.",
+            "看见 es ver algo concreto. 听见 es llegar a oírlo.",
+        ],
+        "pins": groups[11],
+        "extras": [],
+    },
+    {
+        "number": 12,
+        "title": "El día",
+        "summary": "Ir, volver, trabajar, estudiar y dormir.",
+        "body": [
+            "去 es ir y 来 es venir. 回 es volver. El lugar va entre el verbo y el destino no: 我去学校.",
+            "了 marca una acción hecha en un patrón simple: 我吃了.",
+            "上班 es ir a trabajar, 上课 entrar a clase y 睡觉 dormir.",
+        ],
+        "pins": groups[12],
+        "extras": [],
+    },
+    {
+        "number": 13,
+        "title": "La casa",
+        "summary": "La habitación, los muebles y cómo te sentís.",
+        "body": [
+            "房间 es la habitación. 桌子 es la mesa y 椅子 la silla.",
+            "下雨 es «llueve» y 下雪 se arma igual con 雪. 天气 es el clima.",
+            "生病 es enfermarse. 看病 es ir al médico. 医生 es el médico.",
+        ],
+        "pins": groups[13],
+        "extras": [],
+    },
+    {
+        "number": 14,
+        "title": "Colores y ropa",
+        "summary": "Los colores de la bandera y la ropa de todos los días.",
+        "body": [
+            "红色 y 黄色 son el rojo y el amarillo de la bandera. 色 es el color: 红色, 蓝色, 绿色, 白色, 黑色.",
+            "穿 es ponerse una prenda. 件 cuenta prendas: 一件衣服.",
+            "好看 es lindo a la vista. 贵 es caro y 便宜 es barato.",
+        ],
+        "pins": groups[14],
+        "extras": [
+            {"hanzi": "红", "pinyin": "hóng", "es": "rojo"},
+            {"hanzi": "黄", "pinyin": "huáng", "es": "amarillo"},
+            {"hanzi": "蓝", "pinyin": "lán", "es": "azul"},
+            {"hanzi": "绿", "pinyin": "lǜ", "es": "verde"},
+            {"hanzi": "白", "pinyin": "bái", "es": "blanco"},
+            {"hanzi": "黑", "pinyin": "hēi", "es": "negro"},
+            {"hanzi": "颜色", "pinyin": "yánsè", "es": "color"},
+            {"hanzi": "红色", "pinyin": "hóngsè", "es": "color rojo"},
+            {"hanzi": "黄色", "pinyin": "huángsè", "es": "color amarillo"},
+        ],
+    },
+    {
+        "number": 15,
+        "title": "Diálogo de repaso",
+        "summary": "Una conversación corta que junta presentación, familia, hora y un plan.",
+        "body": [
+            "Esta clase no suma una lista nueva. Martín se encuentra con Li Na delante de la escuela.",
+            "Leé el diálogo en voz alta. Después escribí las frases y hacé la autoevaluación del nivel.",
+        ],
+        "pins": "你好 我 叫 名字 什么 是 学生 家 有 几 人 现在 点 去 学校".split(),
+        "extras": [],
+        "review": True,
+        "dialogue": [
+            {"zh": "你好！我叫马丁。你叫什么名字？", "py": "Nǐ hǎo! Wǒ jiào Mǎdīng. Nǐ jiào shénme míngzi?", "es": "¡Hola! Me llamo Martín. ¿Cómo te llamás?"},
+            {"zh": "你好！我叫李娜。我是学生。", "py": "Nǐ hǎo! Wǒ jiào Lǐ Nà. Wǒ shì xuéshēng.", "es": "¡Hola! Me llamo Li Na. Soy estudiante."},
+            {"zh": "你家有几个人？", "py": "Nǐ jiā yǒu jǐ gè rén?", "es": "¿Cuántas personas hay en tu familia?"},
+            {"zh": "我家有三个人：爸爸、妈妈和我。", "py": "Wǒ jiā yǒu sān gè rén: bàba, māma hé wǒ.", "es": "En mi familia somos tres: papá, mamá y yo."},
+            {"zh": "现在几点？", "py": "Xiànzài jǐ diǎn?", "es": "¿Qué hora es?"},
+            {"zh": "现在三点。我去学校。", "py": "Xiànzài sān diǎn. Wǒ qù xuéxiào.", "es": "Son las tres. Voy a la escuela."},
+        ],
+        "quiz": [
+            {"prompt": "¿Qué significa 你好？", "options": ["Hola", "Gracias", "Adiós", "Por favor"], "correct": 0},
+            {"prompt": "¿Cómo se dice «me llamo»?", "options": ["我是", "我叫", "我有", "我去"], "correct": 1},
+            {"prompt": "¿Para qué sirve 吗？", "options": ["Marca una pregunta de sí o no", "Significa gracias", "Es el número uno", "Indica la hora"], "correct": 0},
+            {"prompt": "我家有三个人 quiere decir…", "options": ["Tengo tres casas", "En mi familia somos tres", "Son las tres", "Voy a tres escuelas"], "correct": 1},
+            {"prompt": "现在三点 es…", "options": ["Hoy es lunes", "Son las tres", "Tengo tres años", "Tres personas"], "correct": 1},
+        ],
+    },
+]
+
+(ROOT / "data" / "hsk1.json").write_text(json.dumps(classes, ensure_ascii=False, indent=2), encoding="utf-8")
+print("ok", ROOT / "data" / "hsk1.json")

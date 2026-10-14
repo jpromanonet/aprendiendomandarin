@@ -92,6 +92,38 @@ document.querySelectorAll('.audio-block audio').forEach((audio) => {
   });
 });
 
+document.querySelectorAll('.quiz-form, .lesson-actions form').forEach((form) => {
+  form.addEventListener('submit', () => {
+    sessionStorage.setItem('scroll-back', JSON.stringify({
+      path: location.pathname,
+      y: window.scrollY,
+    }));
+  });
+});
+
+const savedScroll = sessionStorage.getItem('scroll-back');
+if (savedScroll) {
+  sessionStorage.removeItem('scroll-back');
+  try {
+    const data = JSON.parse(savedScroll);
+    if (data.path === location.pathname) {
+      const place = () => {
+        const flash = document.querySelector('.flash');
+        let extra = 0;
+        if (flash) {
+          const style = getComputedStyle(flash);
+          extra = flash.offsetHeight + parseFloat(style.marginTop) + parseFloat(style.marginBottom);
+        }
+        window.scrollTo(0, data.y + extra);
+      };
+      place();
+      window.addEventListener('load', place, { once: true });
+    }
+  } catch {
+    sessionStorage.removeItem('scroll-back');
+  }
+}
+
 const scrollTop = document.querySelector('.scroll-top');
 scrollTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 window.addEventListener('scroll', () => {

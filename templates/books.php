@@ -12,10 +12,15 @@
 <div class="book-list">
   <?php foreach ($books as $book): ?>
     <article class="book-card">
-      <h2><?= e($book['title']) ?></h2>
-      <p><?= e($book['description']) ?></p>
-      <p><?= e($book['size_label']) ?></p>
-      <a class="primary-btn" href="<?= e(url('libros/' . (int) $book['id'] . '/descargar')) ?>">Descargar</a>
+      <?php if (!empty($book['has_cover'])): ?>
+        <img class="book-cover" src="<?= e(url('libros/' . (int) $book['id'] . '/portada')) ?>" alt="Portada de <?= e($book['title']) ?>">
+      <?php endif; ?>
+      <div class="book-copy">
+        <h2><?= e($book['title']) ?></h2>
+        <p><?= e($book['description']) ?></p>
+        <p><?= e($book['size_label']) ?></p>
+        <a class="primary-btn" href="<?= e(url('libros/' . (int) $book['id'] . '/descargar')) ?>">Descargar</a>
+      </div>
     </article>
   <?php endforeach; ?>
 </div>

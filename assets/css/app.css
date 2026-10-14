@@ -577,6 +577,15 @@ body.nav-open { overflow: hidden; }
 .account-switch { margin: 1rem 0 0.15rem; color: var(--ink-soft); }
 .account-switch a { color: var(--red); font-weight: 700; }
 .book-card, .account-card, .book-form { padding: 1.1rem 1.15rem; }
+.book-card { display: grid; grid-template-columns: auto 1fr; gap: 1.15rem; align-items: center; }
+.book-card:not(:has(.book-cover)) { grid-template-columns: 1fr; }
+.book-cover {
+  width: 7.6rem; height: auto; display: block; border-radius: 6px;
+  box-shadow: 0 12px 28px rgba(36, 16, 14, 0.22);
+}
+.book-copy { min-width: 0; }
+.book-copy p { margin: 0.25rem 0; }
+.book-copy .primary-btn { margin-top: 0.75rem; }
 .account-grid { grid-template-columns: 1fr 1fr; }
 .account-card h2, .book-card h2, .book-form h2 { margin: 0 0 0.7rem; }
 .profile {
@@ -842,6 +851,13 @@ body.nav-open { overflow: hidden; }
   .lesson-toc ol { display: grid; grid-template-columns: 1fr; overflow: visible; }
   .lesson-toc a, .toc-quiz-btn { width: 100%; min-width: 0; white-space: normal; }
   .profile-hero-main, .profile-identity { grid-template-columns: 1fr; }
+  .profile-avatar { justify-self: center; }
+  .profile-copy,
+  .profile-copy h1,
+  .profile-email,
+  .profile-meta { text-align: center; }
+  .profile-name-edit { margin-inline: auto; }
+  .profile-name-actions { justify-content: center; }
   .profile-ring-card { justify-self: stretch; }
   .profile-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cert-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

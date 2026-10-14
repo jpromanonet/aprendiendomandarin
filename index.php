@@ -50,6 +50,9 @@ if ($path === 'diccionario' && $method === 'GET') {
 if ($path === 'libros' && $method === 'GET') {
     page_books();
 }
+if (preg_match('#^libros/(\d+)/portada$#', $path, $m) && $method === 'GET') {
+    book_cover((int) $m[1]);
+}
 if (preg_match('#^libros/(\d+)/descargar$#', $path, $m) && $method === 'GET') {
     download_book((int) $m[1]);
 }

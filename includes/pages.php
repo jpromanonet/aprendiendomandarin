@@ -314,10 +314,37 @@ function page_dictionary(): void
 function page_books(): void
 {
     $books = db()->query('SELECT * FROM books ORDER BY created_at DESC')->fetchAll();
+    foreach ($books as &$book) {
+        $book['has_cover'] = is_file(book_cover_path($book));
+    }
+    unset($book);
     render('books', [
         'title' => 'Libros',
         'books' => $books,
     ]);
+}
+
+function book_cover_path(array $book): string
+{
+    $base = pathinfo(basename((string) $book['file_name']), PATHINFO_FILENAME);
+    return app_root() . '/storage/libros/' . $base . '.jpg';
+}
+
+function book_cover(int $id): void
+{
+    $stmt = db()->prepare('SELECT * FROM books WHERE id = ?');
+    $stmt->execute([$id]);
+    $book = $stmt->fetch();
+    $path = $book ? book_cover_path($book) : '';
+    if (!$book || !is_file($path)) {
+        http_response_code(404);
+        exit;
+    }
+    header('Content-Type: image/jpeg');
+    header('Content-Length: ' . (string) filesize($path));
+    header('Cache-Control: public, max-age=86400');
+    readfile($path);
+    exit;
 }
 
 function download_book(int $id): void

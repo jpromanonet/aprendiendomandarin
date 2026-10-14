@@ -7,6 +7,7 @@ require __DIR__ . '/includes/helpers.php';
 require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/install.php';
 require __DIR__ . '/includes/pages.php';
+require __DIR__ . '/includes/certificate_pdf.php';
 
 start_session();
 

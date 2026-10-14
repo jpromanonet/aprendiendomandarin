@@ -7,7 +7,9 @@
     <ul class="stat-row">
       <li><strong><?= count($lessons) ?></strong> clases</li>
       <li><strong><?= number_format((int) $level['words_new'], 0, ',', '.') ?></strong> palabras nuevas</li>
-      <li><strong><?= number_format((int) $level['words_cumulative'], 0, ',', '.') ?></strong> acumuladas</li>
+      <?php if ((int) $level['words_cumulative'] !== (int) $level['words_new']): ?>
+        <li><strong><?= number_format((int) $level['words_cumulative'], 0, ',', '.') ?></strong> acumuladas</li>
+      <?php endif; ?>
     </ul>
   </div>
 </section>

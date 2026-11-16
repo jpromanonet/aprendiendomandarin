@@ -28,8 +28,11 @@ function find_user_by_email(string $email): ?array
 
 function google_configured(): bool
 {
-    $google = config()['google'];
-    return $google['client_id'] !== '' && $google['client_secret'] !== '';
+    $google = config()['google'] ?? null;
+    if (!is_array($google)) {
+        return false;
+    }
+    return ($google['client_id'] ?? '') !== '' && ($google['client_secret'] ?? '') !== '';
 }
 
 function google_start(): void

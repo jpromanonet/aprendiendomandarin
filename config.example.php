@@ -3,20 +3,15 @@
 declare(strict_types=1);
 
 return [
-    'base_path' => '/aprendiendomandarin',
-    'app_url' => 'http://192.168.100.50/aprendiendomandarin',
+    'base_path' => '/learn/mandarin',
+    'app_url' => 'https://jpromano.net/learn/mandarin',
     'db' => [
-        'host' => '127.0.0.1',
+        'host' => 'localhost',
         'port' => 3306,
         'name' => 'aprendiendomandarin',
         'user' => 'root',
         'pass' => '',
         'charset' => 'utf8mb4',
-    ],
-    'google' => [
-        'client_id' => '',
-        'client_secret' => '',
-        'redirect' => 'http://192.168.100.50/aprendiendomandarin/index.php/auth/google/callback',
     ],
     'seed_key' => 'change-me',
 ];

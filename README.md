@@ -4,11 +4,13 @@ Sitio para estudiar chino mandarín (pǔtōnghuà) siguiendo los nueve niveles d
 
 Hecho en PHP, HTML, CSS y JavaScript, con MySQL. No usa framework.
 
+Producción: [jpromano.net/learn/mandarin](https://jpromano.net/learn/mandarin)
+
 ## Qué hay
 
 - Nueve niveles en tres etapas, con clases, vocabulario, ejemplos, práctica y autoevaluación.
 - Diccionario con las palabras del programa HSK 3.0, búsqueda y filtro por nivel.
-- Cuenta con email y contraseña. El ingreso con Google es opcional.
+- Cuenta con email y contraseña.
 - Progreso por clase y certificados de nivel. El certificado final aparece cuando están los nueve.
 - Libros en PDF, con portada, para descargar desde la sección Libros.
 
@@ -16,7 +18,7 @@ Hecho en PHP, HTML, CSS y JavaScript, con MySQL. No usa framework.
 
 - PHP 8.3 o superior, con `pdo_mysql`, `mbstring`, `curl` y `json`.
 - MySQL 8 o MariaDB.
-- Un servidor web con el proyecto en una carpeta pública. En este repo las rutas pasan por `index.php` (`/aprendiendomandarin/index.php/diccionario`).
+- Un servidor web con el proyecto en una carpeta pública. Las rutas de la app pasan por `index.php` (`/learn/mandarin/index.php/diccionario`).
 
 ## Instalación
 
@@ -25,10 +27,10 @@ Hecho en PHP, HTML, CSS y JavaScript, con MySQL. No usa framework.
 3. Abrí en el navegador:
 
 ```text
-/aprendiendomandarin/index.php/instalar?key=TU_SEED_KEY
+/learn/mandarin/index.php/instalar?key=TU_SEED_KEY
 ```
 
-Eso crea la base si no existe, arma las tablas y carga niveles, clases y diccionario. Volver a correrlo vacía el progreso, las autoevaluaciones y los certificados. No borra usuarios ni libros.
+Eso arma las tablas y carga niveles, clases y diccionario. Volver a correrlo vacía el progreso, las autoevaluaciones y los certificados. No borra usuarios ni libros.
 
 4. Entrá a la cuenta y registrate.
 
@@ -42,16 +44,6 @@ python scripts/generate_audio.py
 ```
 
 Los archivos quedan en `assets/audio/`. Si falta un audio, el botón de escuchar no tiene archivo.
-
-## Google
-
-En `config.php`, completá `client_id` y `client_secret` de un cliente OAuth de tipo aplicación web. La URI de redirección tiene que coincidir exactamente con `google.redirect`, por ejemplo:
-
-```text
-http://localhost/aprendiendomandarin/index.php/auth/google/callback
-```
-
-Sin esas claves, el botón de Google no inicia sesión. El email y la contraseña siguen funcionando.
 
 ## Libros
 

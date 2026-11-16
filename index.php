@@ -72,12 +72,6 @@ if ($path === 'certificados/final' && $method === 'GET') {
 if ($path === 'cuenta' && $method === 'POST') {
     post_account();
 }
-if ($path === 'auth/google' && $method === 'GET') {
-    google_start();
-}
-if ($path === 'auth/google/callback' && $method === 'GET') {
-    google_callback();
-}
 if (preg_match('#^media/avatar/(\d+)$#', $path, $m) && $method === 'GET') {
     serve_avatar((int) $m[1]);
 }

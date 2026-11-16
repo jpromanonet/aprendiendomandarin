@@ -313,9 +313,13 @@ function install_run(): string
     }
 
     $name = (string) config()['db']['name'];
-    db_server()->exec(
-        'CREATE DATABASE IF NOT EXISTS `' . str_replace('`', '', $name) . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
-    );
+    try {
+        db_server()->exec(
+            'CREATE DATABASE IF NOT EXISTS `' . str_replace('`', '', $name) . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci'
+        );
+    } catch (Throwable) {
+        // En hosting compartido la base ya existe y no hay permiso CREATE DATABASE.
+    }
 
     $db = db();
     foreach (split_sql((string) file_get_contents(app_root() . '/sql/schema.sql')) as $statement) {
